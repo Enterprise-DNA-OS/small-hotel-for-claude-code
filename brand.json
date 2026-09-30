@@ -1,9 +1,9 @@
 {
   "_": "Your business on every document and view. Change these and run `npm run docs` or `npm run view`.",
-  "business_name": "Your Business",
+  "business_name": "Kowhai Lodge Motel (demo)",
   "logo_path": "",
-  "primary": "#6654f5",
-  "accent": "#ca5a8b",
+  "primary": "#b8860b",
+  "accent": "#2f6f4f",
   "ink": "#0b0c18",
   "paper": "#ffffff",
   "footer_line": "Prepared with Small Hotel for Claude Code."

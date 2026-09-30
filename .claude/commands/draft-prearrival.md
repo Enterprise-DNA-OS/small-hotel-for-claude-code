@@ -1,14 +1,14 @@
 ---
-description: "Record checks: long-stay GST, invoice details over $1,000, the GST number, guest privacy, card numbers in notes, double bookings."
+description: "Draft pre-arrival notes for everyone arriving in the next two days, or one booking."
 ---
-# Compliance
+# Draft prearrival
 
 Read CLAUDE.md first. Use fresh data and run:
 
 ```bash
-npm run hotel -- compliance
+npm run hotel -- draft-prearrival [booking] [--days=2]
 ```
 
-Read docs/compliance.md. Report by rule with its source. Nothing here is tax or legal advice: a clean check means the records are complete, not that the tax is right.
+Fill the check-in time and key collection from CLAUDE.md before showing the drafts.
 
 Answer in plain language, tables for numbers, in the property's currency. Ambiguous names list the candidates and exit 1: ask which one. Never invent a booking, a rate, a payment or a guest detail. Nothing here sends a message or charges a card: drafts go to drafts/ and a person acts.

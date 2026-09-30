@@ -1,11 +1,45 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "tax-invoice",
+    "title": "Tax invoice",
+    "for_each": "select id, number from invoices where issued_on > hotel_today() - 30 order by number",
+    "file": "number",
+    "sections": [
+      { "title": "Invoice", "sql": "select i.number as \"invoice\", i.issued_on as \"date\", s.business_name as \"from\", case when s.country = 'NZ' then 'GST number ' else 'ABN ' end || s.gst_number as \"tax number\", g.name as \"to\", nullif(concat_ws(', ', nullif(g.company, ''), nullif(g.address, ''), nullif(g.email, ''), nullif(g.business_number, '')), '') as \"guest details\", b.ref as \"booking\" from invoices i join bookings b on b.id = i.booking_id join guests g on g.id = b.guest_id cross join settings s where i.id = $1" },
+      { "title": "Accommodation", "sql": "select n.rate_plan as \"rate\", min(n.night_on) as \"from\", max(n.night_on) + 1 as \"to\", count(*) as nights, round(n.rate_cents / 100.0, 2) as \"per night\", round(sum(n.rate_cents) / 100.0, 2) as amount from booking_nights n join invoices i on i.booking_id = n.booking_id where i.id = $1 group by n.rate_plan, n.rate_cents order by 2" },
+      { "title": "Other charges", "sql": "select x.posted_on as \"date\", x.description, round(x.amount_cents / 100.0, 2) as amount from charges x join invoices i on i.booking_id = x.booking_id where i.id = $1 order by x.posted_on" },
+      { "title": "Total", "note": "Amounts include GST. Where the law sets a reduced value for long stays, GST is worked out on that value.", "sql": "select s.currency, round(f.total_cents / 100.0, 2) as \"total including GST\", round(f.gst_cents / 100.0, 2) as \"GST included\", round(f.paid_cents / 100.0, 2) as paid, round(f.balance_cents / 100.0, 2) as \"balance owing\" from invoices i join v_folio f on f.id = i.booking_id cross join settings s where i.id = $1" },
+      { "title": "Payments received", "sql": "select p.paid_on as \"date\", p.method, p.reference, round(p.amount_cents / 100.0, 2) as amount from payments p join invoices i on i.booking_id = p.booking_id where i.id = $1 order by p.paid_on" }
+    ]
+  },
+  {
+    "name": "registration-card",
+    "title": "Guest registration card",
+    "for_each": "select b.id, b.ref from bookings b where b.status = 'confirmed' and b.arrive_on between hotel_today() and hotel_today() + 1 order by b.arrive_on, b.ref",
+    "file": "ref",
+    "sections": [
+      { "title": "Your stay", "sql": "select v.ref as booking, v.guest, v.room_type as \"room type\", coalesce(v.room, '') as room, v.arrive_on as arrival, v.depart_on as departure, v.nights, v.adults, v.children, round(v.total_cents / 100.0, 2) as \"total including GST\", round(v.balance_cents / 100.0, 2) as \"to pay\" from v_bookings v where v.id = $1" },
+      { "title": "Your details", "note": "Please check and complete. We use these details for your stay and your tax invoice only.", "sql": "select g.name, g.email, g.phone, g.address, g.country, '' as \"vehicle registration\", '' as \"signature\" from bookings b join guests g on g.id = b.guest_id where b.id = $1" },
+      { "title": "Requests", "sql": "select b.requests, b.eta as \"arrival time\" from bookings b where b.id = $1" }
+    ]
+  },
+  {
+    "name": "housekeeping-sheet",
+    "title": "Housekeeping sheet",
+    "for_each": "select distinct property as id, coalesce(nullif(property, ''), 'All rooms') as name from rooms where active",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      { "title": "Rooms", "note": "Rooms with a guest arriving first. Tick each when done and return the sheet to reception.", "sql": "select room, status, housekeeping as \"job\", departs, arriving, eta, '' as \"done by\" from v_room_status where property = $1 order by case when housekeeping like 'clean now%' then 0 when housekeeping like 'check-out%' then 1 when housekeeping = 'stayover service' then 2 else 3 end, sort" }
+    ]
+  },
+  {
+    "name": "fire-roll",
+    "title": "Evacuation roll: who is in the building tonight",
+    "for_each": "select 'tonight' as id, hotel_today()::text as name",
+    "file": "name",
+    "sections": [
+      { "title": "In house", "note": "Print at the night audit and keep at the assembly point with your evacuation procedure. Tick each guest once they are accounted for.", "sql": "select v.room, v.guest, v.adults, v.children, g.phone, v.depart_on as departs, '' as \"accounted for\" from v_bookings v join guests g on g.id = v.guest_id where v.status = 'checked_in' and $1::text is not null order by v.room" },
+      { "title": "Arriving later tonight", "sql": "select coalesce(v.room, 'not assigned') as room, v.guest, v.adults, v.children, b.eta from v_bookings v join bookings b on b.id = v.id where v.status = 'confirmed' and v.arrive_on = hotel_today() and $1::text is not null order by v.room" }
     ]
   }
 ]

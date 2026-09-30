@@ -1,0 +1,5 @@
+Booking Reference,Guest First Name,Guest Last Name,Email,Phone,Check In,Check Out,Room Type,Room,Adults,Children,Channel,Status,Total,Amount Paid,Booked On
+LH-50001,Anna,Keller,anna.k@example.com,021 555 0401,12/03/2028,15/03/2028,Studio,Unit 3,2,0,Booking.com,Confirmed,$597.00,0.00,01/02/2028
+LH-50002,Emma,Clarke,emma.clarke@example.com,,20/03/2028,22/03/2028,One-bedroom unit,,2,1,Direct,Confirmed,518.00,103.60,05/02/2028
+LH-50003,*****,*****,,,02/11/2025,04/11/2025,Garden Suite,,2,0,Airbnb,Checked out,"1,000.00",1000.00,01/10/2025
+LH-50004,Tom,Baker,tom.b@example.com,,10/04/2028,13/04/2028,Studio,Unit 4,1,0,Expedia,Cancelled,0.00,0.00,03/02/2028

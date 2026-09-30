@@ -1,14 +1,14 @@
 ---
-description: "Record checks: long-stay GST, invoice details over $1,000, the GST number, guest privacy, card numbers in notes, double bookings."
+description: "Guests who come back: stays, nights, spend, and how they booked."
 ---
-# Compliance
+# Repeat guests
 
 Read CLAUDE.md first. Use fresh data and run:
 
 ```bash
-npm run hotel -- compliance
+npm run hotel -- repeat-guests
 ```
 
-Read docs/compliance.md. Report by rule with its source. Nothing here is tax or legal advice: a clean check means the records are complete, not that the tax is right.
+Point out regulars still booking through a commission channel.
 
 Answer in plain language, tables for numbers, in the property's currency. Ambiguous names list the candidates and exit 1: ask which one. Never invent a booking, a rate, a payment or a guest detail. Nothing here sends a message or charges a card: drafts go to drafts/ and a person acts.

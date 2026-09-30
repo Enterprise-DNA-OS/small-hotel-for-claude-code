@@ -1,14 +1,14 @@
 ---
-description: "Record checks: long-stay GST, invoice details over $1,000, the GST number, guest privacy, card numbers in notes, double bookings."
+description: "Price a stay for a room type and dates, and say whether it can be booked."
 ---
-# Compliance
+# Quote
 
 Read CLAUDE.md first. Use fresh data and run:
 
 ```bash
-npm run hotel -- compliance
+npm run hotel -- quote <room type> <check-in> <nights|check-out> [--rate=]
 ```
 
-Read docs/compliance.md. Report by rule with its source. Nothing here is tax or legal advice: a clean check means the records are complete, not that the tax is right.
+Show the nightly rates and the total including GST.
 
 Answer in plain language, tables for numbers, in the property's currency. Ambiguous names list the candidates and exit 1: ask which one. Never invent a booking, a rate, a payment or a guest detail. Nothing here sends a message or charges a card: drafts go to drafts/ and a person acts.

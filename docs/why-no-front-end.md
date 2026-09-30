@@ -13,12 +13,15 @@ That layer used to be the whole product, because talking to a database was hard.
 
 ## What you give up
 
-- **A visual board.** Stages are a table you ask about, not cards you drag.
+- **The tape chart.** Little Hotelier's calendar lets you drag a booking from one room to another. Here you ask for availability and say which room: `/availability`, then `/move`.
+- **A live channel manager.** Little Hotelier pushes rates and availability to Booking.com and Expedia over live connections. The free version syncs calendars by iCal, which is slower and does not carry rates. See docs/replace-little-hotelier.md.
+- **A booking engine on your website.** Guests cannot book themselves in here. Enquiries come to you, and you book them.
+- **Card payments.** Payments are recorded, not taken. Your card terminal or payment provider takes the money.
 - **A phone app.** It runs where Claude Code runs.
 - **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for businesses that want someone to call.
 
 ## Who this fits
 
-Small teams who already use Claude Code, or who would rather learn to ask than learn another interface. If your team needs a screen to look at all day, keep Little Hotelier. If you need the answers more than the screens, this is cheaper, faster and yours.
+Small teams who already use Claude Code, or who would rather learn to ask than learn another interface. If your team needs a screen to look at all day, or your bookings depend on a live channel connection you cannot live without, keep Little Hotelier, or have Enterprise DNA build those parts into your version. If you need the answers more than the screens, this is cheaper, faster and yours.
 
 Installed and run for you: https://enterprisedna.co/omni/instead-of/little-hotelier

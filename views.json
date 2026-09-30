@@ -1,14 +1,23 @@
 [
   {
-    "name": "week",
-    "title": "This week",
-    "subtitle": "Small Hotel for Claude Code: what needs attention, rendered by npm run view",
+    "name": "today",
+    "title": "The front desk today",
+    "subtitle": "Arrivals, departures, rooms and anything that needs a decision",
     "sections": [
-      {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
-      }
+      { "title": "Needs attention", "note": "Unassigned arrivals, double bookings, balances owing, overdue deposits, missing invoices, rooms not ready.", "sql": "select reason, ref, guest, detail from v_attention order by reason, ref" },
+      { "title": "Arrivals today and tomorrow", "sql": "select case when v.arrive_on = hotel_today() then 'today' else 'tomorrow' end as day, v.ref, v.guest, v.room_type as \"room type\", coalesce(v.room, 'not assigned') as room, v.nights, b.eta, v.channel, round(v.balance_cents / 100.0, 2) as balance from v_bookings v join bookings b on b.id = v.id where v.status = 'confirmed' and v.arrive_on between hotel_today() and hotel_today() + 1 order by v.arrive_on, v.room nulls first" },
+      { "title": "Departures today", "sql": "select ref, guest, room, round(balance_cents / 100.0, 2) as balance from v_bookings where status = 'checked_in' and depart_on <= hotel_today() order by room" },
+      { "title": "Housekeeping", "note": "Rooms with a guest arriving come first.", "sql": "select room, status, housekeeping, in_house as \"in house\", arriving, eta from v_room_status order by case when housekeeping like 'clean now%' then 0 when housekeeping like 'check-out%' then 1 when housekeeping = 'stayover service' then 2 else 3 end, sort" }
+    ]
+  },
+  {
+    "name": "performance",
+    "title": "Occupancy, rate and channels",
+    "subtitle": "The last twelve months and what is on the books",
+    "sections": [
+      { "title": "Occupancy by month", "note": "Occupancy is nights sold over room nights available. ADR is revenue per night sold. RevPAR is revenue per room night available.", "sql": "select month, case when on_books then 'on the books' else 'actual' end as basis, room_nights as \"room nights\", nights_sold as \"nights sold\", occupancy_pct as \"occupancy %\", round(revenue_cents / 100.0, 2) as revenue, round(adr_cents / 100.0, 2) as adr, round(revpar_cents / 100.0, 2) as revpar from v_occupancy where nights_sold > 0 or on_books order by month" },
+      { "title": "Channels after commission", "note": "Twelve months of arrivals. Commission uses each channel's rate on the record.", "sql": "select channel, kind, bookings, nights, round(revenue_cents / 100.0, 2) as revenue, round(commission_cents / 100.0, 2) as commission, round(net_cents / 100.0, 2) as net, avg_lead_days as \"avg lead days\", cancelled from v_channel_mix order by net_cents desc" },
+      { "title": "The next twelve weeks", "sql": "select w::date as \"week of\", count(n.id) as \"nights on books\", round(100.0 * count(n.id) / nullif((select count(*) from rooms where active) * 7, 0), 1) as \"occupancy %\", round(coalesce(sum(n.rate_cents), 0) / 100.0, 2) as revenue from generate_series(date_trunc('week', hotel_today()), date_trunc('week', hotel_today()) + interval '11 weeks', interval '1 week') w left join (select n.* from booking_nights n join v_live b on b.id = n.booking_id) n on n.night_on >= w::date and n.night_on < w::date + 7 group by w order by w" }
     ]
   }
 ]

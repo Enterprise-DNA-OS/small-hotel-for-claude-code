@@ -1,14 +1,14 @@
 ---
-description: "Record checks: long-stay GST, invoice details over $1,000, the GST number, guest privacy, card numbers in notes, double bookings."
+description: "The room board: which rooms to clean first, stayovers, check-outs, out of order."
 ---
-# Compliance
+# Housekeeping
 
 Read CLAUDE.md first. Use fresh data and run:
 
 ```bash
-npm run hotel -- compliance
+npm run hotel -- housekeeping
 ```
 
-Read docs/compliance.md. Report by rule with its source. Nothing here is tax or legal advice: a clean check means the records are complete, not that the tax is right.
+Rooms with a guest arriving come first. Offer to print the sheet with npm run docs -- housekeeping-sheet.
 
 Answer in plain language, tables for numbers, in the property's currency. Ambiguous names list the candidates and exit 1: ask which one. Never invent a booking, a rate, a payment or a guest detail. Nothing here sends a message or charges a card: drafts go to drafts/ and a person acts.
